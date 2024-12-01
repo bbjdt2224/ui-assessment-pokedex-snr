@@ -1,17 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
-import { useGetPokemons } from '../../hooks/useGetPokemons';
+import { Pokemon, useGetPokemons } from '../../hooks/useGetPokemons';
+import { PokemonListItem } from './PokemonListItem';
+import { Outlet } from 'react-router-dom';
 
 export const PokemonList = () => {
   const classes = useStyles();
   const { pokemons, loading } = useGetPokemons();
 
+  const [filteredPokemons, setFilteredPokemons] = useState<Pokemon[]>(pokemons)
+
+  useEffect(() => {
+    setFilteredPokemons(pokemons)
+  }, [pokemons])
+
+  const searchPokemons = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newSet = pokemons.filter(p => {
+      return p.name.toLowerCase().includes(event.target.value.toLowerCase())
+    })
+    setFilteredPokemons(newSet)
+  }
+
   return (
     <div className={classes.root}>
-      {loading && <div>Loading...</div>}
-      {pokemons.map((pkmn) => (
-        <div key={pkmn.id}>{pkmn.name}</div>
-      ))}
+      <div className={classes.search}>
+        <div>Search: </div>
+        <input className={classes.searchBar} onInput={searchPokemons} />
+      </div>
+      <div className={classes.list}>
+        {loading && <div>Loading...</div>}
+        {filteredPokemons.map((pkmn) => (
+          <PokemonListItem key={pkmn.id} pokemon={pkmn}/>
+        ))}
+      </div>
+      <Outlet/>
     </div>
   );
 };
@@ -19,11 +41,29 @@ export const PokemonList = () => {
 const useStyles = createUseStyles(
   {
     root: {
-      width: '100%',
-      textAlign: 'center',
-      padding: '32px',
-      boxSizing: 'border-box',
+      
     },
+    search: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      margin: '32px',
+      gap: '10px',
+      fontWeight: 'bold'
+    },
+    searchBar: {
+      color: 'black',
+      fontSize: '18px',
+      padding: '4px'
+    },
+    list: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'space-evenly',
+      flexWrap: 'wrap',
+      gap: '20px'
+    }
   },
   { name: 'PokemonList' }
 );

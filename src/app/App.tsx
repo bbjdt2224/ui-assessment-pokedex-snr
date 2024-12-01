@@ -2,31 +2,42 @@ import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LayoutProvider } from '../contexts';
-import { Nav } from '../components';
+import { Nav, PokemonDialog } from '../components';
 import { ApolloProvider } from '@apollo/client';
 import { client } from './client';
 import { ListPage, Home } from '../screens';
+import { createTheme, ThemeProvider } from '@mui/material';
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
 
 function App() {
   const classes = useStyles();
   return (
-    <ApolloProvider client={client}>
-      <LayoutProvider>
-        <div className={classes.root}>
-          <BrowserRouter>
-            <Nav />
-            <div className={classes.content}>
-              <div className={classes.scrollableArea}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/pokemon" element={<ListPage />} />
-                </Routes>
+    <ThemeProvider theme={darkTheme}>
+      <ApolloProvider client={client}>
+        <LayoutProvider>
+          <div className={classes.root}>
+            <BrowserRouter>
+              <Nav />
+              <div className={classes.content}>
+                <div className={classes.scrollableArea}>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/pokemon" element={<ListPage />}>
+                      <Route path="*" element={<PokemonDialog />} />
+                    </Route>
+                  </Routes>
+                </div>
               </div>
-            </div>
-          </BrowserRouter>
-        </div>
-      </LayoutProvider>
-    </ApolloProvider>
+            </BrowserRouter>
+          </div>
+        </LayoutProvider>
+      </ApolloProvider>
+    </ThemeProvider>
   );
 }
 
