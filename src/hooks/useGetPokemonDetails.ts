@@ -25,8 +25,8 @@ export type PokemonDetails = {
 };
 
 export const GET_POKEMON_DETAILS = gql`
-  query pokemon($id: String) {
-    pokemon(id: $id) {
+  query pokemon($id: String, $name: String) {
+    pokemon(id: $id, name: $name) {
       id
       number
       name
